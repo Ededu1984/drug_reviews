@@ -1,0 +1,7 @@
+drugsCom_raw/
+venv/
+.ipynb_checkpoints/
+*.csv
+*.pdf
+*.zip
+*.cor
