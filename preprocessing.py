@@ -11,9 +11,6 @@ from spacy.lang.en import stop_words
 # Configurar o nível de registro
 logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
 
-from tqdm.notebook import tqdm
-tqdm.pandas()
-
 logging.info('Loading the english file!!')
 os.system('python -m spacy download en_core_web_md')
 nlp = spacy.load("en_core_web_md")
@@ -48,18 +45,18 @@ def remove_numbers(doc):
         
 def main(file_path: str, output_file: str):
 
-    train = pd.read_csv(file_path)
+    data = pd.read_csv(file_path)
 
-    train['review'] = train['review'].progress_apply(lambda x: x.lower())
-    #train['review'] = train['review'].apply(lambda x: re.sub(r'[^\w\s]', '', x)) 
-    train['review'] = train['review'].progress_apply(lambda x: remove_puctuation(x))
-    train['review'] = train['review'].progress_apply(lambda x: lemmatization(x))
-    train['review'] = train['review'].progress_apply(lambda x: remove_url(x))
-    train['review'] = train['review'].progress_apply(lambda x: remove_stop_words(x))
-    train['review'] = train['review'].progress_apply(lambda x: remove_numbers(x))
-    
-    train.to_csv(output_file)
+    logging.info('Performing the preprocessing of the texts!!')
+    data['review'] = data['review'].apply(lambda x: x.lower())
+    data['review'] = data['review'].apply(lambda x: remove_puctuation(x))
+    data['review'] = data['review'].apply(lambda x: lemmatization(x))
+    data['review'] = data['review'].apply(lambda x: remove_url(x))
+    data['review'] = data['review'].apply(lambda x: remove_stop_words(x))
+    data['review'] = data['review'].apply(lambda x: remove_numbers(x))
 
+    logging.info('Saving the preprocessed file!!')
+    data.to_csv(output_file)
 
 if __name__ == "__main__":
 
