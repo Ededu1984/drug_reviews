@@ -5,3 +5,5 @@ venv/
 *.pdf
 *.zip
 *.cor
+credentials.py
+*.pyc
