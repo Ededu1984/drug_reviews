@@ -7,7 +7,7 @@ RUN apt-get update && \
     apt-get install -y python3 python3-pip && \
     apt-get install -y awscli
 
-RUN pip install s3fs boto3 pandas scikit-learn tensorflow transformers
+RUN pip install s3fs boto3 pandas scikit-learn tensorflow transformers sagemaker
 
 ENV PYTHONUNBUFFERED=TRUE
 ENV PYTHONDONTWRITEBYTECODE=TRUE
@@ -16,5 +16,10 @@ ENV PATH="/opt/ml:${PATH}"
 COPY train.py /opt/ml
 COPY credentials.py /opt/ml
 
-CMD ["python", "/opt/ml/train.py"]
+ENV SAGEMAKER_PROGRAM train.py
+
+#CMD ["python", "/opt/ml/train.py"]
+
+# Defina o ponto de entrada
+ENTRYPOINT ["python", "train.py"]
 
