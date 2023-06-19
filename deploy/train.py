@@ -1,7 +1,6 @@
 
 import os
 import joblib
-#import credentials
 import argparse
 import boto3
 import logging
@@ -19,13 +18,18 @@ logging.basicConfig(level=logging.INFO, format='%(levelname)s - %(message)s')
 import warnings
 warnings.filterwarnings('ignore')
 
+local_execution = False
 logging.info('Setting up the boto client!!')
-#3_client = boto3.client('s3', aws_access_key_id=credentials.aws_access_key_id, aws_secret_access_key=credentials.aws_secret_access_key)
-s3_client = boto3.client('s3')
 
-def model_fn(model_dir):
-    clf = joblib.load(os.path.join(model_dir, "model.joblib"))
-    return clf
+if local_execution:
+    import credentials
+    s3_client = boto3.client('s3', aws_access_key_id=credentials.aws_access_key_id, aws_secret_access_key=credentials.aws_secret_access_key)
+else:
+    s3_client = boto3.client('s3')
+
+# def model_fn(model_dir):
+#     clf = joblib.load(os.path.join(model_dir, "model.joblib"))
+#     return clf
 
 if __name__ == "__main__":
     print("extracting arguments")
@@ -36,7 +40,7 @@ if __name__ == "__main__":
     parser.add_argument("--s3_model_dir", type=str, default="output/")
     parser.add_argument("--key_train", type=str, default="input/drugsComTrain_processed.csv")
     parser.add_argument("--key_test", type=str, default="input/drugsComTest_processed.csv")
-    parser.add_argument("--bucket", type=str, default="mlops-teste")
+    parser.add_argument("--bucket", type=str, default="drug-reviews")
     
     args, _ = parser.parse_known_args()
 
@@ -206,15 +210,12 @@ if __name__ == "__main__":
     report = classification_report(y_test, class_predictions)
     print(report)
 
-    # Salvar o modelo em um arquivo pickle
-    #with open(args.model_dir, 'wb') as arquivo:
-    #   pickle.dump(model, arquivo)
-        
     # persist model
     path = os.path.join(args.model_dir, "model.joblib")
     joblib.dump(model, path)
         
-    # Fazer o upload do arquivo do modelo para o S3
-    #logging.info('Saving the file in the bucket!!')
-    #s3_client.upload_file(args.model_dir+"train.py", args.bucket, args.s3_model_dir+"model.joblib")
+    # Somente em caso de fazer treinamento no ECS
+    bucket_name = "drug-reviews"
+    s3_key = 'output/model.joblib'
+    s3_client.upload_file(path, bucket_name, s3_key)
 

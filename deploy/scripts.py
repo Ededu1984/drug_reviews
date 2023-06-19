@@ -8,7 +8,7 @@ urllib3.disable_warnings()
 def create_task_definition(image_uri, client):
     response = client.register_task_definition(
         family='training-task',
-        taskRoleArn='arn:aws:iam::614823179766:role/ecs-teste',
+        #taskRoleArn='arn:aws:iam::614823179766:role/ecs-teste',
         containerDefinitions=[
             {
                 'name': 'training-container',
@@ -46,7 +46,7 @@ def create_task(cluster, task_definition, client):
     response = client.run_task(
         cluster=cluster,
         taskDefinition=task_definition,
-        launchType='EC2',
+        #launchType='EC2',
         #networkConfiguration=networkConfiguration
     )
     return response
@@ -55,7 +55,7 @@ def create_task(cluster, task_definition, client):
 if __name__ == '__main__':
     client = boto3.client('ecs', aws_access_key_id = credentials.aws_access_key_id, aws_secret_access_key=credentials.aws_secret_access_key, verify=False)
     image_uri = '614823179766.dkr.ecr.us-east-1.amazonaws.com/training-teste:latest'
-    cluster = 'arn:aws:ecs:us-east-1:879976175372:cluster/AWSBatch-dev-circulabi-batch-ce-5566ff52-0b16-3c31-a365-00691ed00fe3'
+    cluster = 'arn:aws:ecs:us-east-1:614823179766:cluster/cluster'
     task_definition = create_task_definition(image_uri, client)
     response = create_task(cluster, task_definition, client)
     #print(response)

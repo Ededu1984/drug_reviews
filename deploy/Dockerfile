@@ -14,12 +14,9 @@ ENV PYTHONDONTWRITEBYTECODE=TRUE
 ENV PATH="/opt/ml:${PATH}"
 
 COPY train.py /opt/ml
+COPY variables.py /opt/ml
 COPY credentials.py /opt/ml
 
 ENV SAGEMAKER_PROGRAM train.py
 
-#CMD ["python", "/opt/ml/train.py"]
-
-# Defina o ponto de entrada
 ENTRYPOINT ["python", "train.py"]
-
